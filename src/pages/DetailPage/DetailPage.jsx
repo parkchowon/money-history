@@ -70,7 +70,7 @@ function DetailPage() {
       });
       dispatch(updateMoneyList(changeLocal)); //dispatch;
       localStorage.setItem("moneylist", JSON.stringify(changeLocal));
-      navigate("/moneyHistory");
+      navigate("/");
     }
   };
 
@@ -88,7 +88,7 @@ function DetailPage() {
     });
     dispatch(deleteMoneyList(changeLocal));
     localStorage.setItem("moneylist", JSON.stringify(changeLocal));
-    navigate("/moneyHistory");
+    navigate("/");
   };
 
   return (
@@ -168,10 +168,12 @@ const Wrapper = styled.div`
   border: 2px solid black;
   border-radius: 9px;
   min-width: 400px;
+  width: 400px;
   min-height: 350px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin: 70px auto;
   padding: 0 50px;
 
   .sub-title {
