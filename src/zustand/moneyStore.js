@@ -1,18 +1,29 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
+const localMonth = localStorage.getItem("month");
+const today = new Date();
+const month = today.getMonth();
+
 const useMoneyStore = create(
-  immer((set) => {
-    return {
-      moneyItem: [],
-      initMoneyList: () => {
-        set(/**초기화 시킴 */);
-      },
-      addMoneyList: () => {
-        set(/**배열에 추가 */);
-      },
-    };
-  })
+  immer((set) => ({
+    month: localMonth ? localMonth : month,
+    money: { moneyList: [] },
+    initMoneys: (data) => {
+      set((state) => {
+        state.money.moneyList = data;
+      });
+    },
+    addMoneys: (data) =>
+      set((state) => {
+        state.money.moneyList.push(data);
+      }),
+    setMonth: (data) => {
+      set((state) => {
+        state.month = data;
+      });
+    },
+  }))
 );
 
 export default useMoneyStore;

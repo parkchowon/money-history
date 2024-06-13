@@ -1,27 +1,31 @@
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { changeMonth } from "../../redux/reducers/money.reducer";
+import { useShallow } from "zustand/react/shallow";
+import useMoneyStore from "../../zustand/moneyStore";
 
-function MonthItem({ month }) {
-  const dispatch = useDispatch();
+function MonthItem({ month: currentMonth }) {
+  const { month, setMonth } = useMoneyStore(
+    useShallow((state) => ({
+      month: state.month,
+      setMonth: state.setMonth,
+    }))
+  );
 
   const localMonth = localStorage.getItem("month");
-  const selectedMonth = useSelector((state) => state.money.selectedMonth);
 
   //월 클릭 시
   const handleClickBtn = (month) => {
-    dispatch(changeMonth(month));
+    setMonth(month);
     localStorage.setItem("month", month);
   };
 
   return (
     <Wrapper
-      $selectedMonth={selectedMonth}
-      $month={month}
+      $selectedMonth={month}
+      $month={currentMonth}
       $localMonth={localMonth}
-      onClick={() => handleClickBtn(month)}
+      onClick={() => handleClickBtn(currentMonth)}
     >
-      {month}월
+      {currentMonth}월
     </Wrapper>
   );
 }

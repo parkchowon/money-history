@@ -1,4 +1,44 @@
 {
-  "moneys": [],
-  "user": []
+  "moneys": [
+    {
+      "id": "94b2",
+      "date": "2024-06-13",
+      "category": "식비",
+      "amount": "1234",
+      "detail": "1234",
+      "createdBy": "초이"
+    },
+    {
+      "id": "2fc7",
+      "date": "2024-06-14",
+      "category": "식비",
+      "amount": "234",
+      "detail": "2345",
+      "createdBy": "초이"
+    },
+    {
+      "id": "159d",
+      "date": "2024-06-13",
+      "category": "식비",
+      "amount": "345",
+      "detail": "3456",
+      "createdBy": "초이"
+    },
+    {
+      "id": "ae6a",
+      "date": "2024-07-13",
+      "category": "식비",
+      "amount": "123",
+      "detail": "1234",
+      "createdBy": "초이"
+    },
+    {
+      "id": "c41a",
+      "createdBy": "초이",
+      "date": "2024-07-13",
+      "category": "식비",
+      "amount": "234",
+      "detail": "234"
+    }
+  ]
 }

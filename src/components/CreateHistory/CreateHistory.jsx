@@ -1,14 +1,15 @@
 import useInput from "@/hooks/useInput";
-import { addMoneyList } from "@/redux/reducers/money.reducer";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import styled from "styled-components";
-import { v4 } from "uuid";
+import api from "../../api/api";
+import useMoneyStore from "../../zustand/moneyStore";
+import useUserStore from "../../zustand/userStore";
 
 function CreateHistory() {
-  const dispatch = useDispatch();
-  const moneyLists = useSelector((state) => state.money.moneys);
-
+  //zustand의 user값
+  const user = useUserStore((state) => state.user);
+  const { addMoneys } = useMoneyStore();
   //날짜 초기값
   const today = new Date().toISOString().slice(0, 10);
   //Input값 저장
@@ -20,22 +21,25 @@ function CreateHistory() {
   //warning message
   const [warningText, setWarningText] = useState("");
 
+  const queryClient = useQueryClient();
+
   //저장한 값의 연도
   const year = date.split("-");
   //현재 연도
   const todayYear = new Date().getFullYear();
   //입력한 값 객체로
   const newMoneyItem = {
-    id: v4(),
+    createdBy: user.nickname,
     date,
     category,
     amount,
     detail,
   };
 
-  useEffect(() => {
-    localStorage.setItem("moneylist", JSON.stringify(moneyLists));
-  }, [moneyLists]);
+  const { mutateAsync: addMoneyList } = useMutation({
+    mutationFn: async (data) => await api.money.addMoneyList(data),
+    onSuccess: () => queryClient.invalidateQueries(["moneys"]),
+  });
 
   const handleCreateHistory = (e) => {
     e.preventDefault();
@@ -49,7 +53,8 @@ function CreateHistory() {
     } else if (detail === "") {
       setWarningText("지출 내용을 입력해주세요.");
     } else {
-      dispatch(addMoneyList(newMoneyItem, year[1]));
+      addMoneys(newMoneyItem);
+      addMoneyList(newMoneyItem);
       localStorage.setItem("month", year[1]);
       setAmountBlank();
       setDetailBlank();

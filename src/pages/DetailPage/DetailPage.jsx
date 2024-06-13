@@ -1,36 +1,51 @@
 import Modal from "@/components/Modal";
 import useRefInput from "@/hooks/useRefInput";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import {
-  deleteMoneyList,
-  updateMoneyList,
-} from "../../redux/reducers/money.reducer";
+import api from "../../api/api";
+import useMoneyStore from "../../zustand/moneyStore";
 
 function DetailPage() {
   const param = useParams();
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   //모달창 여닫힘 여부
   const [isOpen, setIsOpen] = useState(false);
 
-  //로컬스토리지에서 저장된 배열 받아옴
-  const localStorages = JSON.parse(localStorage.getItem("moneylist"));
-  //params의 id값으로 현재 페이지의 값만 저장
-  const detailMoney = localStorages.filter((money) => {
-    return money.id === param.detailId;
+  //zustand에서 moneyList값 불러와서 id랑 맞는 정보 가져오기
+  const moneyList = useMoneyStore((state) => state.money.moneyList);
+  const detailMoney = moneyList.filter((money) => {
+    return money.id == param.detailId;
   })[0];
-  const { date, category, amount, detail } = detailMoney;
+
+  //수정 mutation
+  const { mutateAsync: updatePost } = useMutation({
+    mutationFn: async (data) => await api.money.updateMoneyList(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["moneys"]);
+      navigate("/");
+    },
+  });
+
+  //삭제 mutation
+  const { mutateAsync: deletePost } = useMutation({
+    mutationFn: async (data) => await api.money.deleteMoneyList(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["moneys"]);
+      navigate("/");
+    },
+  });
 
   //useRefInput 커스텀 훅에서 받아온 값
-  const [detailRef, newDetail, handleDetail] = useRefInput(detail);
-  const [dateRef, newDate, handleDate] = useRefInput(date);
-  const [categoryRef, newCategory, handleCategory] = useRefInput(category);
-  const [amountRef, newAmount, handleAmount] = useRefInput(amount);
+  const [detailRef, newDetail, handleDetail] = useRefInput(detailMoney.detail);
+  const [dateRef, newDate, handleDate] = useRefInput(detailMoney.date);
+  const [categoryRef, newCategory, handleCategory] = useRefInput(
+    detailMoney.category
+  );
+  const [amountRef, newAmount, handleAmount] = useRefInput(detailMoney.amount);
 
   //유효성 검사 text
   const [warningText, setWarningText] = useState();
@@ -42,6 +57,7 @@ function DetailPage() {
     category: newCategory,
     amount: newAmount,
     detail: newDetail,
+    createdBy: detailMoney.createdBy,
   };
 
   //현재 연도 불러옴
@@ -65,12 +81,8 @@ function DetailPage() {
     } else if (newAmount === "") {
       setWarningText("금액을 비워둘 수 없습니다.");
     } else {
-      const changeLocal = localStorages.map((item) => {
-        return item.id === param.detailId ? changeDetail : item;
-      });
-      dispatch(updateMoneyList(changeLocal)); //dispatch;
-      localStorage.setItem("moneylist", JSON.stringify(changeLocal));
-      navigate("/");
+      const postId = detailMoney.id;
+      updatePost({ postId, changeDetail });
     }
   };
 
@@ -83,12 +95,8 @@ function DetailPage() {
   //모달창에서 삭제 누를 시
   const handleModalDelete = (e) => {
     e.preventDefault();
-    const changeLocal = localStorages.filter((item) => {
-      return item.id !== param.detailId;
-    });
-    dispatch(deleteMoneyList(changeLocal));
-    localStorage.setItem("moneylist", JSON.stringify(changeLocal));
-    navigate("/");
+    const postId = detailMoney.id;
+    deletePost(postId);
   };
 
   return (
@@ -110,14 +118,14 @@ function DetailPage() {
             <p>상품명</p>
             <input
               ref={detailRef}
-              defaultValue={detail}
+              defaultValue={detailMoney.detail}
               onChange={(e) => handleDetail(e)}
             />
             <p>날짜</p>
             <input
               type="date"
               ref={dateRef}
-              defaultValue={date}
+              defaultValue={detailMoney.date}
               onChange={(e) => {
                 handleDate(e);
               }}
@@ -125,7 +133,7 @@ function DetailPage() {
             <p>항목</p>
             <input
               ref={categoryRef}
-              defaultValue={category}
+              defaultValue={detailMoney.category}
               onChange={(e) => {
                 handleCategory(e);
               }}
@@ -133,7 +141,7 @@ function DetailPage() {
             <p>금액</p>
             <input
               ref={amountRef}
-              defaultValue={amount}
+              defaultValue={detailMoney.amount}
               onChange={(e) => {
                 handleAmount(e);
               }}

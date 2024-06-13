@@ -1,38 +1,38 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { BsExclamationCircle } from "react-icons/bs";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
+import { useShallow } from "zustand/react/shallow";
+import api from "../../api/api";
+import useMoneyStore from "../../zustand/moneyStore";
 import MoneyItem from "../MoneyItem";
 
 function MoneyHistoryList() {
-  const moneyLists = useSelector((state) => state.money.moneys);
-  const month = useSelector((state) => state.money.selectedMonth);
+  const { month, initMoneys } = useMoneyStore(
+    useShallow((state) => ({
+      month: state.month,
+      initMoneys: state.initMoneys,
+    }))
+  );
 
-  const [checkedmonth, setCheckedmonth] = useState([]);
+  const { data: moneys = [], isLoading } = useQuery({
+    queryKey: ["moneys"],
+    queryFn: async () => await api.money.getMoneyList(),
+  });
 
-  //moneyLists 바뀌면 list 리렌더링
+  const filteredDatas = moneys.filter((data) => {
+    return `${data.date.split("-")[1]}` == month;
+  });
+
   useEffect(() => {
-    if (moneyLists.length !== 0) {
-      const filteredDatas = moneyLists.filter((data) => {
-        return `${data.date.split("-")[1]}` == month;
-      });
-      setCheckedmonth(filteredDatas);
-    }
-  }, [moneyLists, month]);
+    initMoneys(filteredDatas);
+  }, [filteredDatas]);
 
-  useEffect(() => {
-    if (moneyLists.length !== 0) {
-      const filteredDatas = moneyLists.filter((data) => {
-        return `${data.date.split("-")[1]}` == month;
-      });
-      setCheckedmonth(filteredDatas);
-    }
-  }, []);
-
+  if (isLoading) return <p>Loading...</p>;
   return (
     <div>
-      {checkedmonth.length !== 0 ? (
-        checkedmonth.map((data) => {
+      {filteredDatas.length !== 0 ? (
+        filteredDatas.map((data) => {
           return <MoneyItem key={data.id} moneyDatas={data} />;
         })
       ) : (
