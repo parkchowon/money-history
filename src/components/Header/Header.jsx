@@ -1,7 +1,17 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import useUserStore from "../../zustand/userStore";
+import SelectBox from "../SelectBox";
 
 function Header() {
+  const [isSelected, setIsSelected] = useState(false);
+  const user = useUserStore((state) => state.user);
+
+  const handleProfile = () => {
+    setIsSelected(!isSelected);
+  };
+
   return (
     <HeaderDiv>
       <Link to={"/"}>
@@ -11,8 +21,11 @@ function Header() {
         </div>
       </Link>
       <div className="user-div">
-        <p>000님</p>
-        <img />
+        <p className="user-name">
+          <span>{user.nickname}</span>님
+        </p>
+        <img src={user.avatar ? user.avatar : ""} onClick={handleProfile} />
+        {isSelected && <SelectBox />}
       </div>
     </HeaderDiv>
   );
@@ -47,6 +60,13 @@ const HeaderDiv = styled.div`
     display: flex;
     align-items: center;
     margin-left: auto;
+    .user-name {
+      margin-right: 16px;
+      font-size: 18px;
+      span {
+        font-weight: 600;
+      }
+    }
     img {
       background-color: mediumaquamarine;
       width: 45px;
