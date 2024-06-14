@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import api from "../api/api";
 import AuthLayout from "../components/Layout/AuthLayout";
 import BaseLayout from "../components/Layout/BaseLayout";
+import Loading from "../components/Loading/Loading";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
 import DetailPage from "../pages/DetailPage";
@@ -20,7 +21,7 @@ const PrivateRoute = ({ element: Element, ...rest }) => {
     queryKey: ["user", token],
     queryFn: async () => await api.auth.checkUser(token),
   });
-  if (isPending) return <p>Loading...</p>;
+  if (isPending) return <Loading />;
   if (isError) return <Navigate to="/auth/login" />;
   return user ? <Element {...rest} /> : <Navigate to="/auth/login" />;
 };

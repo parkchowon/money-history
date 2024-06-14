@@ -5,7 +5,6 @@ import styled from "styled-components";
 import api from "../../api/api";
 import useInput from "../../hooks/useInput";
 import useAuthStore from "../../zustand/authStore";
-import useUserStore from "../../zustand/userStore";
 
 function Login() {
   const [id, handleEmail] = useInput("");
@@ -14,13 +13,11 @@ function Login() {
 
   const navigate = useNavigate();
   const { initUser } = useAuthStore();
-  const { loginUser } = useUserStore();
 
   const { mutateAsync: login, isPending } = useMutation({
     mutationFn: (data) => api.auth.login(data),
     onSuccess: (data) => {
       initUser(data.accessToken);
-      loginUser(data);
     },
   });
 

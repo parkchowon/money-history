@@ -5,19 +5,9 @@ const localMonth = localStorage.getItem("month");
 const today = new Date();
 const month = today.getMonth();
 
-const useMoneyStore = create(
+const useMonthStore = create(
   immer((set) => ({
     month: localMonth ? localMonth : month,
-    money: { moneyList: [] },
-    initMoneys: (data) => {
-      set((state) => {
-        state.money.moneyList = data;
-      });
-    },
-    addMoneys: (data) =>
-      set((state) => {
-        state.money.moneyList.push(data);
-      }),
     setMonth: (data) => {
       set((state) => {
         state.month = data;
@@ -26,4 +16,4 @@ const useMoneyStore = create(
   }))
 );
 
-export default useMoneyStore;
+export default useMonthStore;

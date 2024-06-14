@@ -1,15 +1,18 @@
 import useInput from "@/hooks/useInput";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import styled from "styled-components";
 import api from "../../api/api";
-import useMoneyStore from "../../zustand/moneyStore";
-import useUserStore from "../../zustand/userStore";
+import useMonthStore from "../../zustand/monthStore";
 
 function CreateHistory() {
-  //zustand의 user값
-  const user = useUserStore((state) => state.user);
-  const { addMoneys } = useMoneyStore();
+  const token = JSON.parse(localStorage.getItem("user-token")).state
+    .accessToken;
+  const { data: user } = useQuery({
+    queryKey: ["user", token],
+    queryFn: async () => await api.auth.checkUser(token),
+  });
+  const { setMonth } = useMonthStore();
   //날짜 초기값
   const today = new Date().toISOString().slice(0, 10);
   //Input값 저장
@@ -29,6 +32,7 @@ function CreateHistory() {
   const todayYear = new Date().getFullYear();
   //입력한 값 객체로
   const newMoneyItem = {
+    avatar: user.avatar,
     createdBy: user.nickname,
     date,
     category,
@@ -53,7 +57,7 @@ function CreateHistory() {
     } else if (detail === "") {
       setWarningText("지출 내용을 입력해주세요.");
     } else {
-      addMoneys(newMoneyItem);
+      setMonth(year[1]);
       addMoneyList(newMoneyItem);
       localStorage.setItem("month", year[1]);
       setAmountBlank();

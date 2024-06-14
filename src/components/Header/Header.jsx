@@ -1,12 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import useUserStore from "../../zustand/userStore";
+import api from "../../api/api";
 import SelectBox from "../SelectBox";
 
 function Header() {
   const [isSelected, setIsSelected] = useState(false);
-  const user = useUserStore((state) => state.user);
+
+  const token = JSON.parse(localStorage.getItem("user-token")).state
+    .accessToken;
+  const { data: user } = useQuery({
+    queryKey: ["user", token],
+    queryFn: async () => await api.auth.checkUser(token),
+  });
 
   const handleProfile = () => {
     setIsSelected(!isSelected);

@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { useShallow } from "zustand/react/shallow";
-import useMoneyStore from "../../zustand/moneyStore";
+import useMonthStore from "../../zustand/monthStore";
 
 function MonthItem({ month: currentMonth }) {
-  const { month, setMonth } = useMoneyStore(
+  const { month, setMonth } = useMonthStore(
     useShallow((state) => ({
       month: state.month,
       setMonth: state.setMonth,

@@ -1,7 +1,22 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import api from "../../api/api";
 
 function MoneyItem({ moneyDatas }) {
+  const token = JSON.parse(localStorage.getItem("user-token")).state
+    .accessToken;
+  const { data: user } = useQuery({
+    queryKey: ["user", token],
+    queryFn: async () => await api.auth.checkUser(token),
+  });
+  const handleToDetailPage = (e) => {
+    if (user.nickname !== moneyDatas.createdBy) {
+      alert("접근할 수 없습니다.");
+      e.preventDefault();
+    }
+  };
+
   return (
     <Link
       style={{
@@ -9,9 +24,20 @@ function MoneyItem({ moneyDatas }) {
         textDecoration: "none",
       }}
       to={`details/${moneyDatas.id}`}
+      onClick={handleToDetailPage}
     >
       <Wrapper>
-        <div>
+        <div className="writer-div">
+          <img
+            src={
+              moneyDatas.createdBy == user.nickname
+                ? user.avatar
+                : moneyDatas.avatar
+            }
+          />
+          <p className="writer">{moneyDatas.createdBy}</p>
+        </div>
+        <div className="content">
           <p className="date">{moneyDatas.date}</p>
           <div>
             <p className="category">[{moneyDatas.category}]</p>
@@ -33,12 +59,22 @@ const Wrapper = styled.div`
   padding: 20px 35px;
   border-radius: 20px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   &:hover {
     transform: scale(1.03);
     transition: all 0.3s;
   }
-  div {
+  .writer-div {
+    width: 50px;
+    margin-right: 10px;
+    img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+  }
+  .content {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -50,11 +86,10 @@ const Wrapper = styled.div`
     color: gray;
   }
 
-  div > div {
+  .content > div {
     display: flex;
     flex-direction: row;
     width: 100%;
-    position: relative;
     margin-bottom: 5px;
   }
 
@@ -67,13 +102,12 @@ const Wrapper = styled.div`
   }
 
   .detail {
-    position: absolute;
-    left: 120px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 70%;
+    margin-left: 60px;
   }
 
   .amount {

@@ -2,7 +2,7 @@ import axios from "axios";
 import AuthAPI from "./auth.api";
 import MoneyAPI from "./money.api";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://easy-pacific-horn.glitch.me";
 const AUTH_BASE_URL = "https://moneyfulpublicpolicy.co.kr";
 
 class API {

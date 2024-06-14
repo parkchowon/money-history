@@ -1,11 +1,11 @@
 import Modal from "@/components/Modal";
 import useRefInput from "@/hooks/useRefInput";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import api from "../../api/api";
-import useMoneyStore from "../../zustand/moneyStore";
+import Loading from "../../components/Loading/Loading";
 
 function DetailPage() {
   const param = useParams();
@@ -15,8 +15,11 @@ function DetailPage() {
   //모달창 여닫힘 여부
   const [isOpen, setIsOpen] = useState(false);
 
-  //zustand에서 moneyList값 불러와서 id랑 맞는 정보 가져오기
-  const moneyList = useMoneyStore((state) => state.money.moneyList);
+  const { data: moneyList = [], isPending } = useQuery({
+    queryKey: ["moneys"],
+    queryFn: async () => await api.money.getMoneyList(),
+  });
+
   const detailMoney = moneyList.filter((money) => {
     return money.id == param.detailId;
   })[0];
@@ -98,6 +101,8 @@ function DetailPage() {
     const postId = detailMoney.id;
     deletePost(postId);
   };
+
+  if (isPending) return <Loading />;
 
   return (
     <>

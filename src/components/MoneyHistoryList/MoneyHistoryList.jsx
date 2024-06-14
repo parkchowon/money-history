@@ -1,38 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { BsExclamationCircle } from "react-icons/bs";
 import styled from "styled-components";
 import { useShallow } from "zustand/react/shallow";
 import api from "../../api/api";
-import useMoneyStore from "../../zustand/moneyStore";
+import useMonthStore from "../../zustand/monthStore";
+import Loading from "../Loading/Loading";
 import MoneyItem from "../MoneyItem";
 
 function MoneyHistoryList() {
-  const { month, initMoneys } = useMoneyStore(
+  const { month } = useMonthStore(
     useShallow((state) => ({
       month: state.month,
-      initMoneys: state.initMoneys,
     }))
   );
 
-  const { data: moneys = [], isLoading } = useQuery({
+  const { data: moneys = [], isPending } = useQuery({
     queryKey: ["moneys"],
     queryFn: async () => await api.money.getMoneyList(),
   });
 
-  const filteredDatas = moneys.filter((data) => {
-    return `${data.date.split("-")[1]}` == month;
+  const filteredList = moneys.filter((data) => {
+    console.log(data.date.split("-")[1]);
+    return +`${data.date.split("-")[1]}` == +month;
   });
 
-  useEffect(() => {
-    initMoneys(filteredDatas);
-  }, [filteredDatas]);
-
-  if (isLoading) return <p>Loading...</p>;
+  if (isPending) return <Loading />;
   return (
     <div>
-      {filteredDatas.length !== 0 ? (
-        filteredDatas.map((data) => {
+      {filteredList.length !== 0 ? (
+        filteredList.map((data) => {
           return <MoneyItem key={data.id} moneyDatas={data} />;
         })
       ) : (

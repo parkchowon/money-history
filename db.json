@@ -1,44 +1,47 @@
 {
   "moneys": [
     {
-      "id": "94b2",
-      "date": "2024-06-13",
-      "category": "식비",
-      "amount": "1234",
-      "detail": "1234",
-      "createdBy": "초이"
-    },
-    {
-      "id": "2fc7",
+      "id": "d348",
       "date": "2024-06-14",
-      "category": "식비",
-      "amount": "234",
-      "detail": "2345",
-      "createdBy": "초이"
-    },
-    {
-      "id": "159d",
-      "date": "2024-06-13",
-      "category": "식비",
-      "amount": "345",
-      "detail": "3456",
-      "createdBy": "초이"
-    },
-    {
-      "id": "ae6a",
-      "date": "2024-07-13",
       "category": "식비",
       "amount": "123",
       "detail": "1234",
       "createdBy": "초이"
     },
     {
-      "id": "c41a",
-      "createdBy": "초이",
-      "date": "2024-07-13",
+      "id": "c439",
+      "date": "2024-06-14",
+      "category": "식비",
+      "amount": "45000",
+      "detail": "오야스미",
+      "createdBy": "ㅊㅇ"
+    },
+    {
+      "id": "9be5",
+      "avatar": "https://react-jwt-avatar.s3.ap-northeast-2.amazonaws.com/24-06-14/5456c321-f163-4a0c-bbf8-4984b785ae6f.jpg",
+      "createdBy": "ㅊㅇ",
+      "date": "2024-07-14",
+      "category": "식비",
+      "amount": "123",
+      "detail": "123"
+    },
+    {
+      "id": "3e79",
+      "avatar": "https://react-jwt-avatar.s3.ap-northeast-2.amazonaws.com/24-06-14/5456c321-f163-4a0c-bbf8-4984b785ae6f.jpg",
+      "createdBy": "ㅊㅇ",
+      "date": "2024-06-14",
       "category": "식비",
       "amount": "234",
       "detail": "234"
+    },
+    {
+      "id": "0455",
+      "avatar": "https://react-jwt-avatar.s3.ap-northeast-2.amazonaws.com/24-06-14/5456c321-f163-4a0c-bbf8-4984b785ae6f.jpg",
+      "createdBy": "ㅊㅇ",
+      "date": "2024-05-14",
+      "category": "미용",
+      "amount": "123",
+      "detail": "123"
     }
   ]
 }

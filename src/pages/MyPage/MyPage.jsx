@@ -1,26 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import styled from "styled-components";
 import api from "../../api/api";
-import useUserStore from "../../zustand/userStore";
 
 function MyPage() {
+  const token = JSON.parse(localStorage.getItem("user-token")).state
+    .accessToken;
+  const { data: user } = useQuery({
+    queryKey: ["user", token],
+    queryFn: async () => await api.auth.checkUser(token),
+  });
+
   const [isEdited, setIsEdited] = useState(false);
-  const user = useUserStore((state) => state.user);
   const [editedNick, setEditedNick] = useState(user.nickname);
   const [editedImg, setEditedImg] = useState("");
-  const { loginUser } = useUserStore();
   const fileReader = new FileReader();
   const [avatar, setAvatar] = useState(user.avatar);
 
-  const token = JSON.parse(localStorage.getItem("user-token")).state
-    .accessToken;
+  const queryClient = useQueryClient();
 
   const { mutateAsync: updateUser } = useMutation({
     mutationFn: (data) => api.auth.updateUser(data),
-    onSuccess: (data) => {
-      console.log(data);
-      loginUser(data);
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user"]);
     },
   });
 
